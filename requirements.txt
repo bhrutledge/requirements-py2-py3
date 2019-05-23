@@ -12,7 +12,7 @@ idna==2.8                 # via requests
 jsonschema==3.0.1
 numpy==1.16.3             # via pandas
 oauthlib==3.0.1           # via requests-oauthlib, social-auth-core
-pandas==0.19.2
+pandas==0.19.2 ; python_version == "2.7"
 pyjwt==1.7.1              # via social-auth-core
 pyrsistent==0.15.2        # via jsonschema
 python-dateutil==2.8.0    # via pandas
