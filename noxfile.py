@@ -30,4 +30,6 @@ def requirements(session):
 def test(session):
     envname = get_envname(session.python)
     session.install('-r', f"requirements/dev-{envname}.txt")
-    session.run('pip', 'freeze')
+
+    command = session.posargs or ['pip', 'freeze']
+    session.run(*command)
