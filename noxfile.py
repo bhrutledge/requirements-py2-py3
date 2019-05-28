@@ -1,3 +1,4 @@
+import shutil
 import nox
 
 # Note: This causes `nox -l` to omit other sessions
@@ -12,22 +13,20 @@ def get_envname(python_version):
 
 @nox.session(python=['2.7', '3.7'])
 def requirements(session):
-    envname = get_envname(session.python)
-
     session.install('pip-tools')
+
+    envname = get_envname(session.python)
+    base_txt = f"base-{envname}.txt"
+    dev_txt = f"dev-{envname}.txt"
+
     session.chdir('requirements')
+    session.run('pip-compile', '-o', base_txt, 'base.in')
+    session.run('pip-compile', '-o', dev_txt, base_txt, 'dev.in')
 
-    session.run(
-        'pip-compile',
-        '-o', f"base-{envname}.txt",
-        'base.in',
-    )
-
-    session.run(
-        'pip-compile',
-        '-o', f"dev-{envname}.txt",
-         f"base-{envname}.txt", 'dev.in',
-    )
+    # Maintain compatibility with existing tooling
+    if session.python == '2.7':
+        shutil.copy(base_txt, 'base.txt')
+        shutil.copy(dev_txt, 'dev.txt')
 
 
 @nox.session(python=['2.7', '3.7'])
