@@ -2,6 +2,11 @@
 
 Comparing [Tox](https://tox.readthedocs.io/) and [Nox](http://nox.thea.codes/), using a subset of requirements from an existing project.
 
+```
+$ pipx install tox
+$ pipx install nox
+```
+
 Run the test suite in all environments:
 
 ```
@@ -34,12 +39,12 @@ Upgrade a primary dependency:
 
 - Add a minimal version specifier to a `requirements/*.in`
     - e.g. `flake8>=3.7` in `requirements/dev.in`
-- Recompile
+- Recompile requirements
 
 Upgrade a transitive dependency:
 
 - Remove it from all `requirements/*.txt`
 - OR add it to a `requirements/*.in`
-- Recompile
+- Recompile requirements
 
 However, this might not be necessary, because transitive dependencies should be upgraded as needed when a primary dependency is upgraded.
