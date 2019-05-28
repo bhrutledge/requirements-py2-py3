@@ -1,5 +1,9 @@
 import nox
 
+# Note: This causes `nox -l` to omit other sessions
+# Fixed in https://github.com/theacodes/nox/pull/185, pending release
+nox.options.sessions = ['test']
+
 
 def get_envname(python_version):
     """Return the name a tox default environment"""
