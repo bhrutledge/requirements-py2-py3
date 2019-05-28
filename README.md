@@ -1,6 +1,6 @@
-# Managing dependencies in Python 2 and 3 with pip-tools
+# Managing requirements in Python 2 and 3 with pip-tools
 
-Comparing [Tox](https://tox.readthedocs.io/) and [Nox](http://nox.thea.codes/).
+Comparing [Tox](https://tox.readthedocs.io/) and [Nox](http://nox.thea.codes/), using a subset of requirements from an existing project.
 
 Run the test suite in all environments:
 
@@ -16,7 +16,7 @@ $ tox -e py27
 $ nox -s test-2.7
 ```
 
-List outdated requirements in all environments:
+List outdated dependencies in all environments:
 
 ```
 $ tox -- pip list -o
@@ -30,14 +30,16 @@ $ tox -c requirements
 $ nox -s requirements
 ```
 
-To upgrade a primary dependency:
+Upgrade a primary dependency:
 
-- Add a minimal version specifier a `requirements/*.in`
-    - e.g. `Django>=2.2` in `requirements/base.in`
+- Add a minimal version specifier to a `requirements/*.in`
+    - e.g. `flake8>=3.7` in `requirements/dev.in`
 - Recompile
 
-To upgrade a transitive dependency:
+Upgrade a transitive dependency:
 
 - Remove it from all `requirements/*.txt`
 - OR add it to a `requirements/*.in`
 - Recompile
+
+However, this might not be necessary, because transitive dependencies should be upgraded as needed when a primary dependency is upgraded.

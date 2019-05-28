@@ -8,16 +8,15 @@ attrs==19.1.0
 certifi==2019.3.9
 chardet==3.0.4
 defusedxml==0.6.0
-entrypoints==0.3          # via flake8
-flake8==3.7.7
+flake8==3.5.0
 idna==2.8
 jsonschema==3.0.1
 mccabe==0.6.1             # via flake8
 numpy==1.16.3
 oauthlib==3.0.1
 pandas==0.24.2 ; python_version > "3"
-pycodestyle==2.5.0        # via flake8
-pyflakes==2.1.1           # via flake8
+pycodestyle==2.3.1        # via flake8
+pyflakes==1.6.0           # via flake8
 pyjwt==1.7.1
 pyrsistent==0.15.2
 python-dateutil==2.8.0
