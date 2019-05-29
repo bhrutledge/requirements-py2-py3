@@ -1,4 +1,3 @@
-import shutil
 import nox
 
 # Note: This causes `nox -l` to omit other sessions
@@ -11,28 +10,30 @@ def get_envname(python_version):
     return f"py{python_version.replace('.', '')}"
 
 
+def get_suffix(python_version):
+    """Return a requirements file suffix based on Python version"""
+    envname = get_envname(python_version)
+    # Maintain compatibility with existing tooling
+    return '' if envname == 'py27' else f"-{envname}"
+
+
 @nox.session(python=['2.7', '3.7'])
 def requirements(session):
     session.install('pip-tools')
 
-    envname = get_envname(session.python)
-    base_txt = f"base-{envname}.txt"
-    dev_txt = f"dev-{envname}.txt"
+    suffix = get_suffix(session.python)
+    base_txt = f"base{suffix}.txt"
+    dev_txt = f"dev{suffix}.txt"
 
     session.chdir('requirements')
     session.run('pip-compile', '-o', base_txt, 'base.in')
     session.run('pip-compile', '-o', dev_txt, base_txt, 'dev.in')
 
-    # Maintain compatibility with existing tooling
-    if session.python == '2.7':
-        shutil.copy(base_txt, 'base.txt')
-        shutil.copy(dev_txt, 'dev.txt')
-
 
 @nox.session(python=['2.7', '3.7'])
 def test(session):
-    envname = get_envname(session.python)
-    session.install('-r', f"requirements/dev-{envname}.txt")
+    suffix = get_suffix(session.python)
+    session.install('-r', f"requirements/dev{suffix}.txt")
 
     command = session.posargs or ['pip', 'freeze']
     session.run(*command)
