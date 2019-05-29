@@ -1,11 +1,66 @@
 # Managing requirements in Python 2 and 3 with pip-tools
 
-Comparing [Tox](https://tox.readthedocs.io/) and [Nox](http://nox.thea.codes/), using a subset of requirements from an existing project.
+As documented in [an open pull request for pip-tools](https://github.com/jazzband/pip-tools/pull/651):
+
+> The dependencies of a package can change depending on the Python environment in which it is installed. Here, we define a Python environment as the combination of Operating System, Python version (2.7, 3.6, etc.), and Python implementation (CPython, PyPy, etc.).
+>
+> As the resulting `requirements.txt` can differ for each environment, users must execute `pip-compile` on each Python environment separately to generate a `requirements.txt` valid for each said environment. The same `requirements.in` can be used as the source file for all environments, using PEP 508 environment markers as needed, the same way it would be done for regular `pip` cross-environment usage.
+
+Based on this, my understanding is, given an application that:
+
+- Is in the process of migrating from Python 2 to Python 3
+- Will simultaneously support for both environments
+- Has been using layered requirements (i.e., development built on base/production) in Python 2:
+
+    ```pre
+    ├── requirements
+    │  ├── base.in
+    │  ├── base.txt
+    │  ├── dev.in    <-- Includes base.txt
+    │  ├── dev.txt
+    ```
+
+Then the resulting "matrix" of frozen requirements files should be something like:
+
+```
+├── requirements
+│  ├── base.in
+│  ├── base.txt
+│  ├── base-py37.txt
+│  ├── dev.in
+│  ├── dev.txt
+│  ├── dev-py37.txt
+```
+
+## Compiling and using environment-specific requirements
+
+I compared [Tox](https://tox.readthedocs.io/) and [Nox](http://nox.thea.codes/), using a subset of requirements from an existing project. Tox is what "everyone" uses, but since it [doesn't yet support](https://github.com/tox-dev/tox/issues/189) parametrization of arbitrary environments, I ended up with multiple configuration files and a hack to determine the output filename. Nox makes it easier to maintain one configuration file, written in Python, but it's not as "battle-tested".
+
+Install Tox and Nox for the current user using [pipx](https://pipxproject.github.io/pipx/):
 
 ```
 $ pipx install tox
 $ pipx install nox
 ```
+
+Recompile requirements in all environments:
+
+```
+$ tox -c requirements
+$ nox -s requirements
+```
+
+Upgrade a primary dependency:
+
+- Add a minimal version specifier to a `requirements/*.in`
+    - e.g. `flake8>=3.7` in `requirements/dev.in`
+- Recompile requirements
+
+ Transitive dependencies should be upgraded as needed when a primary dependency is upgraded, but if one needs to be upgraded independently:
+
+- Add it to a `requirements/*.in`
+- OR remove it from all `requirements/*.txt`
+- Recompile requirements
 
 Run the test suite in all environments:
 
@@ -27,27 +82,6 @@ List outdated dependencies in all environments:
 $ tox -- pip list -o
 $ nox -- pip list -o
 ```
-
-Recompile requirements in all environments:
-
-```
-$ tox -c requirements
-$ nox -s requirements
-```
-
-Upgrade a primary dependency:
-
-- Add a minimal version specifier to a `requirements/*.in`
-    - e.g. `flake8>=3.7` in `requirements/dev.in`
-- Recompile requirements
-
-Upgrade a transitive dependency:
-
-- Remove it from all `requirements/*.txt`
-- OR add it to a `requirements/*.in`
-- Recompile requirements
-
-However, this might not be necessary, because transitive dependencies should be upgraded as needed when a primary dependency is upgraded.
 
 ## Differences between Python 2 and Python 3
 
